@@ -119,9 +119,8 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         getComponents();
-        
 
-
+        Application.targetFrameRate = 144;
         
     }
 
