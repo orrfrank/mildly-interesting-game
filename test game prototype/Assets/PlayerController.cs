@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -50,6 +51,8 @@ public class PlayerController : MonoBehaviour
 
     public float groundDrag;
 
+    RaycastHit slopeNormal;
+
     public LayerMask groundLayer;
 
 
@@ -57,16 +60,40 @@ public class PlayerController : MonoBehaviour
     public float jumpForce;
     private bool initiateJump;
 
+    
+
     public enum PlayerStates
     {
         grounded,
         airborne,
+        wallrunningLeft,
+        wallrunningRight,
         inACutscene,
 
     }
     private void TransitionToState(PlayerStates newState)
     {
         currentState = newState;
+    }
+
+    bool onSlope()
+    {
+        
+        if(Physics.Raycast(transform.position,-transform.up, out slopeNormal,transform.localScale.y + 0.3f,groundLayer))
+        {
+            if (slopeNormal.normal != transform.up)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
 
 
@@ -106,6 +133,7 @@ public class PlayerController : MonoBehaviour
         updateStateActions();
 
         sprintingLogic();
+        Debug.Log(currentState);
     }
     private void FixedUpdate()
     {
@@ -121,12 +149,34 @@ public class PlayerController : MonoBehaviour
         switch (currentState)
         {
             case PlayerStates.grounded:
-                
+                isGrounded = true;
                 groundedLogic();
                 break;
             case PlayerStates.airborne:
+                isGrounded = false;
+
+                //detect wallrunning
                 
+                if(Physics.Raycast(transform.position,transform.right,Mathf.Infinity))
+                {
+                    TransitionToState(PlayerStates.wallrunningRight);
+                }
+                else if(Physics.Raycast(transform.position, -transform.right, Mathf.Infinity))
+                {
+                    TransitionToState(PlayerStates.wallrunningLeft);
+                }
+                else
+                {
+                    TransitionToState(PlayerStates.airborne);
+                }
                 break;
+            case PlayerStates.wallrunningLeft:
+                Debug.Log("wallrunning left");
+                break;
+            case PlayerStates.wallrunningRight:
+                Debug.Log("wallrunning left");
+                break;
+
         }
 
 
@@ -138,7 +188,17 @@ public class PlayerController : MonoBehaviour
             case PlayerStates.grounded:
                 drag = groundDrag;
                 speed = groundSpeed;
-                rb.AddForce(moveDirection * (speed + sprintingBonus), ForceMode.Force);
+
+                if (onSlope())
+                {
+                    rb.AddForce(Vector3.ProjectOnPlane(moveDirection, slopeNormal.normal) * (speed + sprintingBonus), ForceMode.Force);
+                    
+                }
+                else
+                {
+                    rb.AddForce(moveDirection * (speed + sprintingBonus), ForceMode.Force);
+                }
+                
 
 
                 
