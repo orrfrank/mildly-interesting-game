@@ -159,15 +159,15 @@ public class PlayerController : MonoBehaviour
                 
                 if(Physics.Raycast(transform.position,transform.right,Mathf.Infinity))
                 {
-                    TransitionToState(PlayerStates.wallrunningRight);
+                    //TransitionToState(PlayerStates.wallrunningRight);
                 }
                 else if(Physics.Raycast(transform.position, -transform.right, Mathf.Infinity))
                 {
-                    TransitionToState(PlayerStates.wallrunningLeft);
+                    //TransitionToState(PlayerStates.wallrunningLeft);
                 }
                 else
                 {
-                    TransitionToState(PlayerStates.airborne);
+                    //TransitionToState(PlayerStates.airborne);
                 }
                 break;
             case PlayerStates.wallrunningLeft:
