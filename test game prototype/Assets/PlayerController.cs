@@ -75,6 +75,20 @@ public class PlayerController : MonoBehaviour
     public float cameraPitchSpeed = 0.1f;
     public float wallrunCameraDegrees;
     public float wallrunGravity;
+
+    [Header("dash settings")]
+    public float dashDistance;
+    public float dashForce;
+    public float dashCooldown;
+    public float dashSlowdown;
+
+    private bool isDashing;
+
+
+
+    private Vector3 velBeforeDash = Vector3.zero;
+    float dashTimer;
+
    
 
     public enum PlayerStates
@@ -170,7 +184,13 @@ public class PlayerController : MonoBehaviour
         gatherInputs();
         updateStateActions();
 
-        sprintingLogic();
+        //sprintingLogic();
+
+
+        if(Input.GetKeyDown(sprintKey) && !isDashing)
+        {
+            StartCoroutine(dash());
+        }
     }
     private void FixedUpdate()
     {
@@ -381,7 +401,11 @@ public class PlayerController : MonoBehaviour
     }
     void useNormalGravity()
     {
-        rb.useGravity = true;
+        if(!isDashing)
+        {
+            rb.useGravity = true;
+        }
+        
     }
     void pitchCamera(float direction)
     {
@@ -394,6 +418,22 @@ public class PlayerController : MonoBehaviour
         camScript.rotationZ = Mathf.Lerp(camScript.rotationZ, 0,  (wallrunCameraDegrees/ cameraPitchSpeed) * Time.deltaTime);
     }
 
+
+    IEnumerator dash()
+    {
+        isDashing = true;
+        rb.useGravity = false;
+        velBeforeDash = rb.velocity;
+        rb.AddForce(transform.forward * dashForce, ForceMode.Impulse);
+
+        yield return new WaitForSeconds(dashDistance);
+
+        rb.velocity = velBeforeDash;
+        rb.useGravity = true;
+        isDashing = false;
+    }
+
+   
     void dragForces()
     {
         float forwardSpeed = Vector3.Dot(rb.velocity, transform.forward);
