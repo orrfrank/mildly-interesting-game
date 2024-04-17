@@ -56,7 +56,7 @@ public class grapplehook : Weapon
             }
 
 
-            if(Vector3.Distance(grapplePoint, player.transform.position) <= 2)
+            if (Vector3.Distance(grapplePoint, player.transform.position) <= 2 || Input.GetMouseButtonUp(0))
             {
                 stopGrapple();
             }

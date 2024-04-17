@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 17664333}
   - component: {fileID: 17664332}
   - component: {fileID: 17664331}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -376,7 +376,7 @@ GameObject:
   - component: {fileID: 144677624}
   - component: {fileID: 144677623}
   - component: {fileID: 144677622}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: wall (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1944,7 +1944,7 @@ MonoBehaviour:
   wallrunGravity: 6
   dashDistance: 0.1
   dashForce: 20
-  dashCooldown: 1
+  dashCooldown: 0.4
   dashSlowdown: 15
   dashingFov: 10
 --- !u!54 &1198246275
