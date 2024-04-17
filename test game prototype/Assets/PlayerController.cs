@@ -40,7 +40,7 @@ public class PlayerController : MonoBehaviour
 
     public KeyCode sprintKey = KeyCode.LeftShift;
 
-    public float sprintingFov;
+    
 
     private float cameraFov = 90;
 
@@ -84,7 +84,7 @@ public class PlayerController : MonoBehaviour
 
     private bool isDashing;
 
-
+    public float dashingFov;
 
     private Vector3 velBeforeDash = Vector3.zero;
     float dashTimer;
@@ -184,13 +184,10 @@ public class PlayerController : MonoBehaviour
         gatherInputs();
         updateStateActions();
 
-        //sprintingLogic();
+        dashingLogic();
 
 
-        if(Input.GetKeyDown(sprintKey) && !isDashing)
-        {
-            StartCoroutine(dash());
-        }
+        
     }
     private void FixedUpdate()
     {
@@ -327,16 +324,22 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    void sprintingLogic()
+    void dashingLogic()
     {
-        if (Input.GetKey(sprintKey))
+
+        if (Input.GetKeyDown(sprintKey) && !isDashing)
         {
-            sprintingBonus = Mathf.Lerp(sprintingBonus, sprintingSpeed, timeToSprint);
-            Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, sprintingFov, timeToSprint * 10 * Time.deltaTime);
+            StartCoroutine(dash());
+        }
+
+        if (isDashing)
+        {
+            float targetFov = cameraFov + dashingFov;
+            Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, targetFov, timeToSprint * 10 * Time.deltaTime);
         }
         else
         {
-            sprintingBonus = Mathf.Lerp(sprintingBonus, 0f, timeToSprint);
+            
             Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, cameraFov, timeToSprint * 10 * Time.deltaTime);
         }
     }
@@ -424,11 +427,20 @@ public class PlayerController : MonoBehaviour
         isDashing = true;
         rb.useGravity = false;
         velBeforeDash = rb.velocity;
-        rb.AddForce(transform.forward * dashForce, ForceMode.Impulse);
+        if(onSlope())
+        {
+
+            rb.AddForce(Vector3.ProjectOnPlane(moveDirection, slopeNormal.normal) * dashForce, ForceMode.Impulse);
+        }
+        else
+        {
+            rb.AddForce(moveDirection * dashForce, ForceMode.Impulse);
+        }
+        
 
         yield return new WaitForSeconds(dashDistance);
 
-        rb.velocity = velBeforeDash;
+        rb.velocity = new Vector3(velBeforeDash.x,rb.velocity.y,velBeforeDash.z);
         rb.useGravity = true;
         isDashing = false;
     }

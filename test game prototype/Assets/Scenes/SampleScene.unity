@@ -1928,7 +1928,6 @@ MonoBehaviour:
   timeToSprint: 0.5
   sprintingSpeed: 20
   sprintKey: 304
-  sprintingFov: 100
   drag: 0
   airDrag: 2
   fallMultiplier: 10
@@ -1947,6 +1946,7 @@ MonoBehaviour:
   dashForce: 20
   dashCooldown: 0
   dashSlowdown: 15
+  dashingFov: 10
 --- !u!54 &1198246275
 Rigidbody:
   m_ObjectHideFlags: 0
