@@ -104,6 +104,7 @@ public class grapplehook : Weapon
         RaycastHit hit;
         if(Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, Mathf.Infinity, grappleMask) && range > Vector3.Distance(grapplePoint, player.transform.position))
         {
+            Debug.Log(hit.transform);
             isGrappling = true;
             //set grapple joint
             grapplePoint = hit.point;

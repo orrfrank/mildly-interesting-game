@@ -83,11 +83,11 @@ public class PlayerController : MonoBehaviour
     public float dashSlowdown;
 
     private bool isDashing;
+    private bool canDash = true;
 
     public float dashingFov;
 
     private Vector3 velBeforeDash = Vector3.zero;
-    float dashTimer;
 
    
 
@@ -294,12 +294,10 @@ public class PlayerController : MonoBehaviour
                 linearJumpLogic();
                 resetCameraPitch();
                 useNormalGravity();
-                Debug.Log("linear");
                 break;
 
             case AirborneStates.wallRunningLeft:
                 // Add logic specific to wall running left
-                Debug.Log("wallrunning left");
                 if(initiateJump)
                 {
                     jumpFromWall(-wallHit.normal.normalized);
@@ -311,7 +309,6 @@ public class PlayerController : MonoBehaviour
 
             case AirborneStates.wallRunningRight:
                 // Add logic specific to wall running right
-                Debug.Log("wallrunning right");
                 if (initiateJump)
                 {
                     jumpFromWall(-wallHit.normal.normalized);
@@ -327,7 +324,7 @@ public class PlayerController : MonoBehaviour
     void dashingLogic()
     {
 
-        if (Input.GetKeyDown(sprintKey) && !isDashing)
+        if (Input.GetKeyDown(sprintKey) && !isDashing && canDash)
         {
             StartCoroutine(dash());
         }
@@ -443,6 +440,13 @@ public class PlayerController : MonoBehaviour
         rb.velocity = new Vector3(velBeforeDash.x,rb.velocity.y,velBeforeDash.z);
         rb.useGravity = true;
         isDashing = false;
+        StartCoroutine(cooldownDash());
+    }
+    IEnumerator cooldownDash()
+    {
+        canDash = false;
+        yield return new WaitForSeconds(dashCooldown);
+        canDash = true;
     }
 
    

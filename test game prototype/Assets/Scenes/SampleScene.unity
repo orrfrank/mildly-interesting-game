@@ -1944,7 +1944,7 @@ MonoBehaviour:
   wallrunGravity: 6
   dashDistance: 0.1
   dashForce: 20
-  dashCooldown: 0
+  dashCooldown: 1
   dashSlowdown: 15
   dashingFov: 10
 --- !u!54 &1198246275
@@ -2346,7 +2346,7 @@ MonoBehaviour:
   grappleShootPoint: {fileID: 1568664393}
   rendererWidth: 0.105
   range: 30
-  pullInStrength: 20
+  pullInStrength: 13
   pullInDamp: 7
 --- !u!1 &1544720751
 GameObject:
