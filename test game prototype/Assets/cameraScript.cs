@@ -16,6 +16,8 @@ public class cameraScript : MonoBehaviour
     float rotationX;
     float rotationY;
 
+    public float rotationZ;
+
 
     [Header("settings")]
 
@@ -33,12 +35,17 @@ public class cameraScript : MonoBehaviour
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
+
     
     }
     private void Update()
     {
         handleInput();
         rotateCamera();
+
+
+
+        
     }
 
 
@@ -58,25 +65,24 @@ public class cameraScript : MonoBehaviour
     }
 
 
-
     void rotateCamera()
     {
-
         //handles vertical rotation
-
-
         rotationX -= mouseY;
         rotationY += mouseX;
 
         rotationX = Mathf.Clamp(rotationX, -90, 90);
 
-        transform.localRotation = Quaternion.Euler(rotationX, rotationY, 0f);
-
         // Apply the vertical rotation to the camera
-        player.transform.localRotation = Quaternion.Euler(0,rotationY, 0f);
+        transform.localRotation = Quaternion.Euler(rotationX, rotationY, rotationZ);
 
+
+
+        // Apply the vertical rotation to the player (assuming player is a separate object)
+        player.transform.localRotation = Quaternion.Euler(0, rotationY, 0f);
     }
 
-    
+
+
 
 }
