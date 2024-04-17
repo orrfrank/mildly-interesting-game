@@ -1367,12 +1367,14 @@ MonoBehaviour:
   sprintingFov: 100
   drag: 0
   airDrag: 2
+  fallMultiplier: 10
+  lowFallMultiplier: 7
   isGrounded: 0
   groundDrag: 5
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  jumpForce: 5
+  jumpForce: 7
 --- !u!54 &1198246275
 Rigidbody:
   m_ObjectHideFlags: 0

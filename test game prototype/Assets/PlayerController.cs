@@ -46,6 +46,9 @@ public class PlayerController : MonoBehaviour
     
     public float airDrag;
 
+    public float fallMultiplier;
+    public float lowFallMultiplier;
+
     [Header("grounded movement settings")]
     public bool isGrounded;
 
@@ -124,6 +127,20 @@ public class PlayerController : MonoBehaviour
         
     }
 
+    void linearJumpLogic()
+    {
+        if(rb.velocity.y < 0)
+        {
+            rb.velocity += transform.up * -(fallMultiplier - 1) * Time.deltaTime;
+            Debug.Log("fall");
+        }
+        else if(rb.velocity.y > 0 && !Input.GetButton("Jump"))
+        {
+            rb.velocity += transform.up * -(lowFallMultiplier - 1) * Time.deltaTime;
+            Debug.Log("low fall");
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -132,7 +149,6 @@ public class PlayerController : MonoBehaviour
         updateStateActions();
 
         sprintingLogic();
-        Debug.Log(currentState);
     }
     private void FixedUpdate()
     {
@@ -154,9 +170,10 @@ public class PlayerController : MonoBehaviour
             case PlayerStates.airborne:
                 isGrounded = false;
 
+                linearJumpLogic();
                 //detect wallrunning
-                
-                if(Physics.Raycast(transform.position,transform.right,Mathf.Infinity))
+
+                if (Physics.Raycast(transform.position,transform.right,Mathf.Infinity))
                 {
                     //TransitionToState(PlayerStates.wallrunningRight);
                 }
@@ -226,6 +243,7 @@ public class PlayerController : MonoBehaviour
             startJump();
         }
 
+        
         
     }
 
