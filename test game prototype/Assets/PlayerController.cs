@@ -326,7 +326,6 @@ public class PlayerController : MonoBehaviour
 
     void dashingLogic()
     {
-        Debug.Log(canDash);
         if (Input.GetKeyDown(sprintKey) && !isDashing && canDash)
         {
             StartCoroutine(dash());
