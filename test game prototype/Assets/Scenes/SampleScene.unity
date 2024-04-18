@@ -1928,16 +1928,16 @@ MonoBehaviour:
   timeToSprint: 0.5
   sprintingSpeed: 20
   sprintKey: 304
-  drag: 0
+  drag: 5
   airDrag: 2
   fallMultiplier: 10
-  lowFallMultiplier: 7
+  lowFallMultiplier: 13
   isGrounded: 0
   groundDrag: 5
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  jumpForce: 7
+  jumpForce: 6
   wallJumpForce: 12
   cameraPitchSpeed: 5
   wallrunCameraDegrees: 30

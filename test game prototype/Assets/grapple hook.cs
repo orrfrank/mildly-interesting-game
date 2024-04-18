@@ -102,13 +102,14 @@ public class grapplehook : Weapon
     {
         
         RaycastHit hit;
-        if(Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, Mathf.Infinity, grappleMask) && range > Vector3.Distance(grapplePoint, player.transform.position))
+        if(Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, Mathf.Infinity, grappleMask))
         {
-            Debug.Log(hit.transform);
+            
             isGrappling = true;
             //set grapple joint
             grapplePoint = hit.point;
             joint = player.AddComponent<SpringJoint>();
+            Debug.Log(joint);
 
             joint.autoConfigureConnectedAnchor = false;
             joint.connectedAnchor = grapplePoint;
@@ -127,10 +128,10 @@ public class grapplehook : Weapon
             grappleRender.startWidth = rendererWidth;
             grappleRender.endWidth = rendererWidth;
         }
+        Debug.Log(hit.transform);
 
-        
 
-        
+
     }
 
 

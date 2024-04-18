@@ -46,11 +46,13 @@ public class PlayerController : MonoBehaviour
 
 
     [Header("drag settings")]
-    public float drag;
+    public float airDrag;
+    public float groundDrag;
+    public float drag { get; private set; }
 
     [Header("airborne settings")]
     
-    public float airDrag;
+    
 
     public float fallMultiplier;
     public float lowFallMultiplier;
@@ -58,7 +60,7 @@ public class PlayerController : MonoBehaviour
     [Header("grounded movement settings")]
     public bool isGrounded;
 
-    public float groundDrag;
+   
 
     RaycastHit slopeNormal;
 
@@ -87,6 +89,7 @@ public class PlayerController : MonoBehaviour
 
     public float dashingFov;
 
+    Coroutine dashCooldownCoroutine;
     private Vector3 velBeforeDash = Vector3.zero;
 
    
@@ -323,7 +326,7 @@ public class PlayerController : MonoBehaviour
 
     void dashingLogic()
     {
-
+        Debug.Log(canDash);
         if (Input.GetKeyDown(sprintKey) && !isDashing && canDash)
         {
             StartCoroutine(dash());
@@ -384,6 +387,7 @@ public class PlayerController : MonoBehaviour
         rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
         initiateJump = false;
         rb.AddForce((transform.up * jumpForce) + -wallDirection * wallJumpForce, ForceMode.Impulse);
+        StartDashCooldown(0.8f);
     }
 
     void useWallrunningGravity()
@@ -440,16 +444,27 @@ public class PlayerController : MonoBehaviour
         rb.velocity = new Vector3(velBeforeDash.x,rb.velocity.y,velBeforeDash.z);
         rb.useGravity = true;
         isDashing = false;
-        StartCoroutine(cooldownDash());
+        StartDashCooldown(dashCooldown);
     }
-    IEnumerator cooldownDash()
+    IEnumerator cooldownDash(float time)
     {
         canDash = false;
-        yield return new WaitForSeconds(dashCooldown);
+        yield return new WaitForSeconds(time);
         canDash = true;
     }
+    void StartDashCooldown(float time)
+    {
+        // Check if a coroutine is already running
+        if (dashCooldownCoroutine != null)
+        {
+            // Stop the previous coroutine
+            StopCoroutine(dashCooldownCoroutine);
+        }
 
-   
+        // Start the new coroutine and store its reference
+        dashCooldownCoroutine = StartCoroutine(cooldownDash(time));
+    }
+
     void dragForces()
     {
         float forwardSpeed = Vector3.Dot(rb.velocity, transform.forward);
