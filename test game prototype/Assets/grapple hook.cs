@@ -27,8 +27,9 @@ public class grapplehook : Weapon
 
 
     [Space]
+    public float grapplePointLaunchInfluence;
+    public float grappleLaunchForce;
     public float range;
-
     public float pullInStrength;
     public float pullInDamp;
     
@@ -45,14 +46,10 @@ public class grapplehook : Weapon
 
         if (isGrappling)
         {
-            if(Input.GetMouseButton(1))
+            if(Input.GetMouseButtonDown(1))
             {
-                joint.maxDistance -= pullInStrength * Time.deltaTime;
-                joint.damper = 0;
-            }
-            else
-            {
-                joint.damper = Mathf.Lerp(joint.damper,pullInDamp,(pullInDamp / 2) * Time.deltaTime);
+                stopGrapple();
+                launchPlayerToGrapplePoint();
             }
 
 
@@ -85,6 +82,8 @@ public class grapplehook : Weapon
         //no projectile
     }
 
+
+
     protected override void Shoot()
     {
         if(!isGrappling)
@@ -107,7 +106,9 @@ public class grapplehook : Weapon
             
             isGrappling = true;
             //set grapple joint
+            
             grapplePoint = hit.point;
+            
             joint = player.AddComponent<SpringJoint>();
             Debug.Log(joint);
 
@@ -124,15 +125,36 @@ public class grapplehook : Weapon
             joint.massScale = 4.5f;
 
             //set renderer
+            
             grappleRender = grappleShootPoint.gameObject.AddComponent<LineRenderer>(); ;
             grappleRender.startWidth = rendererWidth;
             grappleRender.endWidth = rendererWidth;
+            
         }
         Debug.Log(hit.transform);
-
+            
 
 
     }
+
+    void launchPlayerToGrapplePoint()
+    {
+        Rigidbody playerRb = player.GetComponent<Rigidbody>();
+        Vector3 grapplePointPos = grapplePoint;
+
+        // Calculate the direction from the player to the grapple point
+        Vector3 directionToGrapplePoint = grapplePointPos - player.transform.position;
+
+        // Calculate the player's forward direction
+        Vector3 playerForward = player.transform.forward + player.transform.up;
+
+        // Calculate the combined direction by adding influence from the grapple point
+        Vector3 combinedDirection = playerForward + directionToGrapplePoint.normalized * grapplePointLaunchInfluence;
+
+        // Apply force to launch the player in the combined direction
+        playerRb.AddForce(combinedDirection.normalized * grappleLaunchForce, ForceMode.Impulse);
+    }
+
 
 
 
@@ -141,7 +163,9 @@ public class grapplehook : Weapon
         isGrappling = false;
         Destroy(player.GetComponent<SpringJoint>());
         Destroy(grappleRender);
+            
     }
+    
 
 
 }

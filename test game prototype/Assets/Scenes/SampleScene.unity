@@ -2449,6 +2449,8 @@ MonoBehaviour:
     m_Bits: 128
   grappleShootPoint: {fileID: 1568664393}
   rendererWidth: 0.105
+  grapplePointLaunchInfluence: 5
+  grappleLaunchForce: 15
   range: 30
   pullInStrength: 13
   pullInDamp: 7
