@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviour
 
     [Header("references")]
     public Transform headLocation;
+    public Transform orientation;
+    public Transform camHolder;
     Rigidbody rb;
 
     cameraScript camScript;
@@ -149,7 +151,7 @@ public class PlayerController : MonoBehaviour
     void gatherInputs()
     {
         move = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-        moveDirection = (transform.forward * move.y + transform.right * move.x).normalized;
+        moveDirection = (orientation.forward * move.y + orientation.right * move.x).normalized;
         if(Input.GetButtonDown("Jump"))
         {
             initiateJump = true;
@@ -188,13 +190,13 @@ public class PlayerController : MonoBehaviour
         updateStateActions();
 
         dashingLogic();
+        moveCamera();
 
 
-        
     }
     private void FixedUpdate()
     {
-        moveCamera();
+        
         dragForces();
         fixedUpdateStateActions();
 
@@ -218,11 +220,11 @@ public class PlayerController : MonoBehaviour
 
                 //detect wallrunning
 
-                if(Physics.Raycast(transform.position,transform.right,out wallHit,0.7f))
+                if(Physics.Raycast(orientation.position,orientation.right,out wallHit,0.7f))
                 {
                     TransitionToAirState(AirborneStates.wallRunningRight);
                 }
-                else if(Physics.Raycast(transform.position, -transform.right,out wallHit, 0.7f))
+                else if(Physics.Raycast(orientation.position, -orientation.right,out wallHit, 0.7f))
                 {
                     TransitionToAirState(AirborneStates.wallRunningLeft);
                 }
@@ -377,7 +379,7 @@ public class PlayerController : MonoBehaviour
 
     void moveCamera()
     {
-        Camera.main.transform.position = headLocation.position;
+        camHolder.transform.position = headLocation.position;
     }
 
     void jumpFromWall(Vector3 wallDirection)
@@ -466,12 +468,12 @@ public class PlayerController : MonoBehaviour
 
     void dragForces()
     {
-        float forwardSpeed = Vector3.Dot(rb.velocity, transform.forward);
-        Vector3 forwardDragForce = -drag * forwardSpeed * transform.forward;
+        float forwardSpeed = Vector3.Dot(rb.velocity, orientation.forward);
+        Vector3 forwardDragForce = -drag * forwardSpeed * orientation.forward;
 
         // Calculate drag force along the right direction
-        float rightSpeed = Vector3.Dot(rb.velocity, transform.right);
-        Vector3 rightDragForce = -drag * rightSpeed * transform.right;
+        float rightSpeed = Vector3.Dot(rb.velocity, orientation.right);
+        Vector3 rightDragForce = -drag * rightSpeed * orientation.right;
 
         // Apply the drag forces
         rb.AddForce(forwardDragForce, ForceMode.Force);

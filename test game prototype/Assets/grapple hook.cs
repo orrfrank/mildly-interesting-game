@@ -35,6 +35,9 @@ public class grapplehook : Weapon
     public float thresholdDistance = 1f;
     public float thresholdDistanceMultiplier;
     public float minYVelToDisconnect;
+    [Space]
+    public float forwardBoost;
+
 
     Vector3 playerGrappleStartPos;
     float distanceFromGrapplePoint;
@@ -82,6 +85,13 @@ public class grapplehook : Weapon
 
     }
 
+    private void FixedUpdate()
+    {
+        if(isGrappling)
+        {
+            playerRb.AddForce(Camera.main.transform.forward * forwardBoost, ForceMode.Force);
+        }
+    }
     private void LateUpdate()
     {
         if (isGrappling)

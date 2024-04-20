@@ -8,6 +8,7 @@ public class cameraScript : MonoBehaviour
 {
     // Start is called before the first frame update
     [Header("input")]
+    public Transform orientation;
 
     //camera
     float mouseX;
@@ -59,8 +60,8 @@ public class cameraScript : MonoBehaviour
 
     void handleInput()
     {
-        mouseX = Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
-        mouseY = Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
+        mouseX = Input.GetAxis("Mouse X") * sensitivity ;
+        mouseY = Input.GetAxis("Mouse Y") * sensitivity ;
 
     }
 
@@ -74,12 +75,12 @@ public class cameraScript : MonoBehaviour
         rotationX = Mathf.Clamp(rotationX, -90, 90);
 
         // Apply the vertical rotation to the camera
-        transform.localRotation = Quaternion.Euler(rotationX, rotationY, rotationZ);
+        transform.rotation = Quaternion.Euler(rotationX, rotationY, rotationZ);
 
 
 
         // Apply the vertical rotation to the player (assuming player is a separate object)
-        player.transform.localRotation = Quaternion.Euler(0, rotationY, 0f);
+        orientation.transform.rotation = Quaternion.Euler(0, rotationY, 0f);
     }
 
 
