@@ -37,6 +37,7 @@ public class grapplehook : Weapon
     public float minYVelToDisconnect;
     [Space]
     public float forwardBoost;
+    public float lookMinToBoost;
 
 
     Vector3 playerGrappleStartPos;
@@ -59,8 +60,7 @@ public class grapplehook : Weapon
         playerVelocity = playerRb.velocity;
         distanceFromGrapplePoint = Vector3.Distance(player.transform.position, grapplePoint);
 
-        Debug.Log("distance " + minYVelToDisconnect * distanceFromGrapplePoint);
-        Debug.Log("player vel " + playerVelocity.y);
+
         if (isGrappling)
         {
             
@@ -87,11 +87,27 @@ public class grapplehook : Weapon
 
     private void FixedUpdate()
     {
-        if(isGrappling)
+        if (isGrappling)
         {
-            playerRb.AddForce(Camera.main.transform.forward * forwardBoost, ForceMode.Force);
+            // Calculate the direction from the player to the grappling point
+            Vector3 directionToGrapplingPoint = grapplePoint - transform.position;
+            directionToGrapplingPoint.Normalize();
+
+            // Calculate the dot product between the camera's forward vector and the direction to the grappling point
+            float dotProduct = Vector3.Dot(Camera.main.transform.forward, directionToGrapplingPoint);
+
+            // Check if the dot product is less than a certain threshold (indicating the camera is not facing directly towards the grappling point)
+            Debug.Log(dotProduct);
+            dotProduct = Mathf.Clamp (dotProduct, 0.0f, 1.0f);
+
+            float multiplier = (1 - dotProduct) * forwardBoost; //reverse multiplier here
+            Debug.Log(multiplier);
+            Vector3 force = Camera.main.transform.forward * multiplier;
+            playerRb.AddForce(force, ForceMode.Force);
+
         }
     }
+
     private void LateUpdate()
     {
         if (isGrappling)
