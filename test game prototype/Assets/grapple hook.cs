@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public class grapplehook : Weapon
 {
@@ -18,7 +19,8 @@ public class grapplehook : Weapon
     bool isGrappling;
 
     public Transform grappleShootPoint;
-
+    public Transform targetPointVisual;
+    public float sphereCastRadius;
     LineRenderer grappleRender;
     SpringJoint joint;
 
@@ -31,6 +33,7 @@ public class grapplehook : Weapon
     public float grappleLaunchForce;
     public float range;
     public float pullInStrength;
+    public float minPullStrength;
     public float pullInDamp;
     public float thresholdDistance = 1f;
     public float thresholdDistanceMultiplier;
@@ -42,10 +45,13 @@ public class grapplehook : Weapon
 
     Vector3 playerGrappleStartPos;
     float distanceFromGrapplePoint;
+    float pullInMultiplier;
 
     Vector3 playerVelocity;
 
     Rigidbody playerRb;
+
+    RaycastHit predictionPoint;
 
     private void Start()
     {
@@ -63,8 +69,10 @@ public class grapplehook : Weapon
 
         if (isGrappling)
         {
+            float pullInSpeed = Mathf.Clamp(pullInStrength * pullInMultiplier, minPullStrength, pullInStrength);
+            Debug.Log(pullInSpeed);
+            joint.maxDistance -= pullInSpeed * Time.deltaTime;
             
-            joint.maxDistance -= pullInStrength * Time.deltaTime;
 
             
 
@@ -76,14 +84,63 @@ public class grapplehook : Weapon
             }
 
 
-            if (Vector3.Distance(grapplePoint, player.transform.position) <= 2 || Input.GetMouseButtonUp(0) || IsPlayerOnOtherSide() && playerVelocity.y > 3)
+            if (Vector3.Distance(grapplePoint, player.transform.position) <= 2 || Input.GetMouseButtonUp(0))
             {
                 stopGrapple();
             }
+
+
+
+
+
+
+            
+
+
         }
-        
+
+
+        if(!isGrappling)
+        {
+            if (targetPointVisual != null)
+            {
+                RaycastHit rayHit;
+                RaycastHit sphereCastHit;
+                if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out rayHit, Mathf.Infinity, grappleMask))
+                {
+                    
+                    targetPointVisual.gameObject.SetActive(true);
+                    targetPointVisual.position = rayHit.point;
+                    predictionPoint = rayHit;
+                }
+                else if (Physics.SphereCast(Camera.main.transform.position, sphereCastRadius, Camera.main.transform.forward, out sphereCastHit, Mathf.Infinity, grappleMask))
+                {
+                    
+                    targetPointVisual.gameObject.SetActive(true);
+                    targetPointVisual.position = sphereCastHit.point;
+                    predictionPoint = sphereCastHit;
+                }
+                else
+                {
+                    
+                    targetPointVisual.gameObject.SetActive(false);
+                    predictionPoint.point = Vector3.zero;
+                }
+
+            }
+        }
+        else
+        {
+            targetPointVisual.gameObject.SetActive(false);
+            predictionPoint.point = Vector3.zero;
+        }
+
+
 
     }
+
+
+    
 
     private void FixedUpdate()
     {
@@ -97,11 +154,10 @@ public class grapplehook : Weapon
             float dotProduct = Vector3.Dot(Camera.main.transform.forward, directionToGrapplingPoint);
 
             // Check if the dot product is less than a certain threshold (indicating the camera is not facing directly towards the grappling point)
-            Debug.Log(dotProduct);
-            dotProduct = Mathf.Clamp (dotProduct, 0.0f, 1.0f);
-
-            float multiplier = (1 - dotProduct) * forwardBoost; //reverse multiplier here
-            Debug.Log(multiplier);
+            
+            float clampedDotProduct = Mathf.Clamp (dotProduct, 0.0f, 1.0f);
+            pullInMultiplier = clampedDotProduct;
+            float multiplier = (1 - clampedDotProduct) * forwardBoost; //reverse multiplier here
             Vector3 force = Camera.main.transform.forward * multiplier;
             playerRb.AddForce(force, ForceMode.Force);
 
@@ -193,14 +249,14 @@ public class grapplehook : Weapon
     void startGrapple()
     {
         
-        RaycastHit hit;
-        if(Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, Mathf.Infinity, grappleMask))
+
+        if(predictionPoint.point != Vector3.zero)
         {
             
             isGrappling = true;
             //set grapple joint
             
-            grapplePoint = hit.point;
+            grapplePoint = predictionPoint.point;
             playerGrappleStartPos = player.transform.position;
             joint = player.AddComponent<SpringJoint>();
             Debug.Log(joint);
@@ -225,7 +281,6 @@ public class grapplehook : Weapon
             grappleRender.endWidth = rendererWidth;
             
         }
-        Debug.Log(hit.transform);
             
 
 
