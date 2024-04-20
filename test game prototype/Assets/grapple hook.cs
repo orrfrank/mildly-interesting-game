@@ -32,32 +32,53 @@ public class grapplehook : Weapon
     public float range;
     public float pullInStrength;
     public float pullInDamp;
-    
+    public float thresholdDistance = 1f;
+    public float thresholdDistanceMultiplier;
+    public float minYVelToDisconnect;
+
+    Vector3 playerGrappleStartPos;
+    float distanceFromGrapplePoint;
+
+    Vector3 playerVelocity;
+
+    Rigidbody playerRb;
 
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
+        playerRb = player.GetComponent<Rigidbody>();
     }
 
 
     protected override void Update()
     {
         base.Update();
+        playerVelocity = playerRb.velocity;
+        distanceFromGrapplePoint = Vector3.Distance(player.transform.position, grapplePoint);
 
+        Debug.Log("distance " + minYVelToDisconnect * distanceFromGrapplePoint);
+        Debug.Log("player vel " + playerVelocity.y);
         if (isGrappling)
         {
-            if(Input.GetMouseButtonDown(1))
+            
+            joint.maxDistance -= pullInStrength * Time.deltaTime;
+
+            
+
+            //stop grapple conditions
+            if (Input.GetMouseButtonDown(1))
             {
                 stopGrapple();
                 launchPlayerToGrapplePoint();
             }
 
 
-            if (Vector3.Distance(grapplePoint, player.transform.position) <= 2 || Input.GetMouseButtonUp(0))
+            if (Vector3.Distance(grapplePoint, player.transform.position) <= 2 || Input.GetMouseButtonUp(0) || IsPlayerOnOtherSide() && playerVelocity.y > 3)
             {
                 stopGrapple();
             }
         }
+        
 
     }
 
@@ -96,6 +117,52 @@ public class grapplehook : Weapon
         }
     }
 
+    public bool IsPlayerOnOtherSide()
+    {
+        if (isGrappling)
+        {
+            // Calculate the vector from the grapple point to the player's current position (ignoring y-axis)
+            Vector3 playerToGrapplePoint = new Vector3(player.transform.position.x - grapplePoint.x, 0f, player.transform.position.z - grapplePoint.z);
+
+            // Calculate the vector from the grapple point to the player's initial position (ignoring y-axis)
+            Vector3 playerToStartPos = new Vector3(playerGrappleStartPos.x - grapplePoint.x, 0f, playerGrappleStartPos.z - grapplePoint.z);
+
+            // Normalize the vectors
+            playerToGrapplePoint.Normalize();
+            playerToStartPos.Normalize();
+
+            // Calculate the dot product between the two vectors
+            float dotProduct = Vector3.Dot(playerToGrapplePoint, playerToStartPos);
+
+            // Calculate the angle between the vectors (in radians)
+            float angle = Mathf.Acos(dotProduct);
+
+            // Convert the angle from radians to degrees
+            angle = angle * Mathf.Rad2Deg;
+
+            // Check if the angle is greater than a threshold value (e.g., 90 degrees)
+            if (angle > 90f)
+            {
+                if (distanceFromGrapplePoint < thresholdDistance)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return false;
+    }
+
+
+
+
 
     void startGrapple()
     {
@@ -108,7 +175,7 @@ public class grapplehook : Weapon
             //set grapple joint
             
             grapplePoint = hit.point;
-            
+            playerGrappleStartPos = player.transform.position;
             joint = player.AddComponent<SpringJoint>();
             Debug.Log(joint);
 
@@ -116,8 +183,9 @@ public class grapplehook : Weapon
             joint.connectedAnchor = grapplePoint;
 
             float distanceFromGrapple = Vector3.Distance(grapplePoint, player.transform.position);
+            thresholdDistance = distanceFromGrapple / thresholdDistanceMultiplier;
 
-            joint.maxDistance = 0.8f * distanceFromGrapple;
+            joint.maxDistance = 1f * distanceFromGrapple;
             joint.minDistance = 0f * distanceFromGrapple;
 
             joint.spring = 4.5f;
