@@ -18,8 +18,20 @@ public abstract class Weapon : MonoBehaviour
 
     protected GameObject currentProjectileInstance;
 
+    public Vector3 shootDirection;
+
     protected virtual void Update()
     {
+        RaycastHit hit;
+        if(Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit,Mathf.Infinity))
+        {
+            shootDirection = (hit.point - shootPoint.position).normalized;
+        }
+        else
+        {
+            shootDirection = shootPoint.forward;
+        }
+
         // Decrease the shootTimer
         shootTimer -= Time.deltaTime;
 
@@ -47,7 +59,7 @@ public abstract class Weapon : MonoBehaviour
             Rigidbody rb = currentProjectileInstance.GetComponent<Rigidbody>();
             if (rb != null)
             {
-                rb.velocity = shootPoint.forward * projectileSpeed;
+                rb.velocity = shootDirection * projectileSpeed;
             }
             currentAmmo--;
             DefineProjectile();
