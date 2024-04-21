@@ -62,13 +62,13 @@ MonoBehaviour:
   rendererWidth: 0.105
   grapplePointLaunchInfluence: 5
   grappleLaunchForce: 15
-  range: 30
+  range: 20
   pullInStrength: 13
-  minPullStrength: 0
+  minPullStrength: 7
   pullInDamp: 0
   thresholdDistance: 5
   thresholdDistanceMultiplier: 2
-  minYVelToDisconnect: 10
+  maxYVel: 40
   forwardBoost: 15
   lookMinToBoost: 0
 --- !u!1 &2371601905157694211

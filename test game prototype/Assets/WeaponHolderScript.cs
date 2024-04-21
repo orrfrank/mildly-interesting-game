@@ -20,7 +20,11 @@ public class WeaponHolderScript : MonoBehaviour
             instantiatedWeapons.Add(weaponObject);
 
             // Deactivate all instantiated weapons
-            weaponObject.SetActive(false);
+            if(weaponObject != null)
+            {
+                weaponObject.SetActive(false);
+            }
+            
         }
         EnableCurrentWeapon();
 

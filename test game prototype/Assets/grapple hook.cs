@@ -37,7 +37,7 @@ public class grapplehook : Weapon
     public float pullInDamp;
     public float thresholdDistance = 1f;
     public float thresholdDistanceMultiplier;
-    public float minYVelToDisconnect;
+    public float maxYVel;
     [Space]
     public float forwardBoost;
     public float lookMinToBoost;
@@ -106,14 +106,14 @@ public class grapplehook : Weapon
             {
                 RaycastHit rayHit;
                 RaycastHit sphereCastHit;
-                if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out rayHit, Mathf.Infinity, grappleMask))
+                if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out rayHit, range, grappleMask))
                 {
                     
                     targetPointVisual.gameObject.SetActive(true);
                     targetPointVisual.position = rayHit.point;
                     predictionPoint = rayHit;
                 }
-                else if (Physics.SphereCast(Camera.main.transform.position, sphereCastRadius, Camera.main.transform.forward, out sphereCastHit, Mathf.Infinity, grappleMask))
+                else if (Physics.SphereCast(Camera.main.transform.position, sphereCastRadius, Camera.main.transform.forward, out sphereCastHit, range, grappleMask))
                 {
                     
                     targetPointVisual.gameObject.SetActive(true);
@@ -160,6 +160,11 @@ public class grapplehook : Weapon
             float multiplier = (1 - clampedDotProduct) * forwardBoost; //reverse multiplier here
             Vector3 force = Camera.main.transform.forward * multiplier;
             playerRb.AddForce(force, ForceMode.Force);
+            //clamp max y vel
+            if(playerRb.velocity.y > maxYVel)
+            {
+                playerRb.velocity = new Vector3(playerRb.velocity.x, maxYVel, playerRb.velocity.z);
+            }
 
         }
     }
@@ -252,7 +257,7 @@ public class grapplehook : Weapon
 
         if(predictionPoint.point != Vector3.zero)
         {
-            
+            playerRb.velocity = new Vector3(playerRb.velocity.x, 0, playerRb.velocity.z);
             isGrappling = true;
             //set grapple joint
             
@@ -309,15 +314,32 @@ public class grapplehook : Weapon
 
     void stopGrapple()
     {
+        
         isGrappling = false;
-        Destroy(player.GetComponent<SpringJoint>());
-        Destroy(grappleRender);
+        if(player != null)
+        {
+            if(player.GetComponent<SpringJoint>() != null)
+            {
+                Destroy(player.GetComponent<SpringJoint>());
+            }
+            
+        }
+        if(grappleRender!= null)
+        {
+            Destroy(grappleRender);
+        }
+       
             
     }
 
     private void OnDisable()
     {
-        stopGrapple();
+        if (Application.isPlaying)
+        {
+            Debug.Log("application playing");
+            stopGrapple();
+        }
+
     }
 
 }
