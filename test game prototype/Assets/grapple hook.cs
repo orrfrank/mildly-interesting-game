@@ -314,7 +314,10 @@ public class grapplehook : Weapon
         Destroy(grappleRender);
             
     }
-    
 
+    private void OnDisable()
+    {
+        stopGrapple();
+    }
 
 }
