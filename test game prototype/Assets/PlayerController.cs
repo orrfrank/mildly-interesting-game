@@ -94,8 +94,16 @@ public class PlayerController : MonoBehaviour
     Coroutine dashCooldownCoroutine;
     private Vector3 velBeforeDash = Vector3.zero;
 
-   
-
+    [Header("movingPlatforms")]
+    public float movingPlatformConstant;
+    GameObject currentMovingPlatform;
+    Vector3 currentPlatformVel;
+    Vector3 previousPlatformVel;
+    private Dictionary<GameObject, Vector3> previousPlatformPositions = new Dictionary<GameObject, Vector3>();
+    private Vector3 predictedPosition;
+    Vector3 smoothedPlatformVel;
+    public float smoothingSpeed;
+    private Vector3 targetPosition;
     public enum PlayerStates
     {
         grounded,
@@ -190,15 +198,27 @@ public class PlayerController : MonoBehaviour
         updateStateActions();
 
         dashingLogic();
-        moveCamera();
-
+        
+        
 
     }
+
+    private void LateUpdate()
+    {
+        moveCamera();
+    }
+
     private void FixedUpdate()
     {
         
         dragForces();
         fixedUpdateStateActions();
+        // Reset platform-related variables if not on a moving platform
+        if (currentMovingPlatform == null)
+        {
+            currentPlatformVel = Vector3.zero;
+            previousPlatformVel = Vector3.zero;
+        }
 
     }
 
@@ -256,10 +276,18 @@ public class PlayerController : MonoBehaviour
                 {
                     rb.AddForce(moveDirection * (speed + sprintingBonus), ForceMode.Force);
                 }
-                
+
+                //handles moving platforms
+                if (currentMovingPlatform != null)
+                {
+                    // Calculate the target position by adding the platform's velocity
+                    targetPosition = transform.position + GetPlatformVelocity(currentMovingPlatform);
+
+                    // Smoothly move the player towards the target position
+                    rb.MovePosition(targetPosition);
+                }
 
 
-                
                 break;
 
             case PlayerStates.airborne:
@@ -286,7 +314,7 @@ public class PlayerController : MonoBehaviour
         }
 
         
-        
+
     }
 
     void airborneStateLogic()
@@ -482,6 +510,53 @@ public class PlayerController : MonoBehaviour
 
 
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.CompareTag("MovingPlatform"))
+        {
+            currentMovingPlatform = collision.gameObject;
+        }
+    }
+    private void OnCollisionExit(Collision collision)
+    {
+        Vector3 addForce = GetPlatformVelocity(collision.gameObject);
+        Debug.Log("added force " + addForce);
+        rb.AddForce(addForce * movingPlatformConstant);
+        currentMovingPlatform = null;
+        ClearPreviousPlatformPosition(collision.gameObject);
 
-   
+    }
+
+    public Vector3 GetPlatformVelocity(GameObject platform)
+    {
+        // Check if we have a previous position for this platform
+        if (!previousPlatformPositions.ContainsKey(platform))
+        {
+            // If not, initialize it with the current position
+            previousPlatformPositions[platform] = platform.transform.position;
+            return Vector3.zero; // No velocity yet
+        }
+
+        // Get the current position of the platform
+        Vector3 currentPlatformPosition = platform.transform.position;
+
+        // Calculate the velocity using the change in position over time
+        Vector3 platformVelocity = (currentPlatformPosition - previousPlatformPositions[platform]);
+
+        // Update the previous platform position for the next calculation
+        previousPlatformPositions[platform] = currentPlatformPosition;
+
+        return platformVelocity;
+    }
+    public void ClearPreviousPlatformPosition(GameObject platform)
+    {
+        // Check if the platform exists in the dictionary
+        if (previousPlatformPositions.ContainsKey(platform))
+        {
+            // If it does, remove it from the dictionary
+            previousPlatformPositions.Remove(platform);
+        }
+        // Otherwise, do nothing
+    }
+
 }
