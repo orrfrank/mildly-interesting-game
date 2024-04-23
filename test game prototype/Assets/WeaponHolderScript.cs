@@ -33,6 +33,17 @@ public class WeaponHolderScript : MonoBehaviour
 
     private void Update()
     {
+        // Check for number key presses
+        for (int i = 1; i <= loadoutManager.availableWeapons.Count; i++)
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha0 + i))
+            {
+                // Switch to the weapon corresponding to the pressed number key
+                SwitchToWeapon(i - 1);
+            }
+        }
+
+        // Check for scroll wheel input
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (scroll != 0f)
         {
@@ -81,6 +92,13 @@ public class WeaponHolderScript : MonoBehaviour
         instantiatedWeapons[currentWeaponIndex].SetActive(true);
         
     }
+    private void SwitchToWeapon(int weaponIndex)
+    {
+        if (weaponIndex >= 0 && weaponIndex < instantiatedWeapons.Count)
+        {
+            currentWeaponIndex = weaponIndex;
+            EnableCurrentWeapon();
+        }
+    }
 
-    
 }

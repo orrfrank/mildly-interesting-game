@@ -79,6 +79,7 @@ public class PlayerController : MonoBehaviour
     public float cameraPitchSpeed = 0.1f;
     public float wallrunCameraDegrees;
     public float wallrunGravity;
+    public float wallRunForwardBoost;
 
     [Header("dash settings")]
     public float dashDistance;
@@ -278,6 +279,7 @@ public class PlayerController : MonoBehaviour
                 }
 
                 //handles moving platforms
+                /*
                 if (currentMovingPlatform != null)
                 {
                     // Calculate the target position by adding the platform's velocity
@@ -286,7 +288,7 @@ public class PlayerController : MonoBehaviour
                     // Smoothly move the player towards the target position
                     rb.MovePosition(targetPosition);
                 }
-
+                */
 
                 break;
 
@@ -415,7 +417,7 @@ public class PlayerController : MonoBehaviour
 
         rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
         initiateJump = false;
-        rb.AddForce((transform.up * jumpForce) + -wallDirection * wallJumpForce, ForceMode.Impulse);
+        rb.AddForce((transform.up * jumpForce) + (-wallDirection * wallJumpForce), ForceMode.Impulse);
         StartDashCooldown(0.8f);
     }
 
@@ -519,11 +521,15 @@ public class PlayerController : MonoBehaviour
     }
     private void OnCollisionExit(Collision collision)
     {
-        Vector3 addForce = GetPlatformVelocity(collision.gameObject);
-        Debug.Log("added force " + addForce);
-        rb.AddForce(addForce * movingPlatformConstant);
-        currentMovingPlatform = null;
-        ClearPreviousPlatformPosition(collision.gameObject);
+        if (collision.gameObject.CompareTag("MovingPlatform"))
+        {
+            Vector3 addForce = GetPlatformVelocity(collision.gameObject);
+            Debug.Log("added force " + addForce);
+            rb.AddForce(addForce * movingPlatformConstant);
+            currentMovingPlatform = null;
+            ClearPreviousPlatformPosition(collision.gameObject);
+        }
+        
 
     }
 

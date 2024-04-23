@@ -1935,6 +1935,7 @@ MonoBehaviour:
   cameraPitchSpeed: 5
   wallrunCameraDegrees: 30
   wallrunGravity: 6
+  wallRunForwardBoost: 5
   dashDistance: 0.2
   dashForce: 20
   dashCooldown: 0.6
@@ -1983,7 +1984,7 @@ GameObject:
   - component: {fileID: 1206265469}
   m_Layer: 6
   m_Name: ground
-  m_TagString: MovingPlatform
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

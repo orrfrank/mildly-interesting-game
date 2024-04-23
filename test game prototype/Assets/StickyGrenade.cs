@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class StickyGrenade : MonoBehaviour
+public class StickyGrenade : explosive
 {
     // Flag to check if the grenade is stuck to something
     public bool isStuck = false;
@@ -44,5 +44,14 @@ public class StickyGrenade : MonoBehaviour
 
         // Set the flag to indicate that the grenade is now stuck
         isStuck = true;
+    }
+
+
+    private void Update()
+    {
+        if(Input.GetMouseButtonDown(1))
+        {
+            explode();
+        }
     }
 }

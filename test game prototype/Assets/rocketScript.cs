@@ -2,11 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class rocketScript : MonoBehaviour
+public class rocketScript : explosive
 {
-    public float explosionRadius;
-    public float explosionForce;
-
+    
     private Rigidbody rb;
 
     private void Start()
@@ -25,39 +23,7 @@ public class rocketScript : MonoBehaviour
 
 
 
-    void explode()
-    {
-        foreach (var rb in nearbyRigidbodies())
-        {
-            rb.AddExplosionForce(explosionForce, transform.position, explosionRadius);
-        }
-
-
-        Destroy(this.gameObject);
-    }
-
-
-    Rigidbody[] nearbyRigidbodies()
-    {
-        // Get colliders within the explosion radius
-        Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius);
-
-        // Initialize a list to store nearby Rigidbody components
-        List<Rigidbody> nearbyRigidbodies = new List<Rigidbody>();
-
-        // Loop through all colliders and add Rigidbody components to the list
-        foreach (Collider col in colliders)
-        {
-            Rigidbody rb = col.GetComponent<Rigidbody>();
-            if (rb != null)
-            {
-                nearbyRigidbodies.Add(rb);
-            }
-        }
-
-        // Convert the list to an array and return
-        return nearbyRigidbodies.ToArray();
-    }
+    
 
     private void FixedUpdate()
     {
