@@ -1941,6 +1941,7 @@ MonoBehaviour:
   dashSlowdown: 15
   dashingFov: 15
   movingPlatformConstant: 20
+  smoothingSpeed: 20
 --- !u!54 &1198246275
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3007,6 +3008,7 @@ MonoBehaviour:
   availableWeapons:
   - {fileID: 3854310404333430039, guid: 877d0864637716b49bcc71f0fddea6ca, type: 3}
   - {fileID: 6077454874107934755, guid: e4d1ac6442e85014ebee4799a2125dab, type: 3}
+  - {fileID: 2321493965135723033, guid: 45fd1658648906246a03b8bf56ed1cf9, type: 3}
 --- !u!1 &1857611756
 GameObject:
   m_ObjectHideFlags: 0
