@@ -1934,7 +1934,7 @@ MonoBehaviour:
   wallJumpForce: 12
   cameraPitchSpeed: 5
   wallrunCameraDegrees: 30
-  wallrunGravity: 6
+  wallrunGravity: 4.7
   wallRunForwardBoost: 5
   dashDistance: 0.2
   dashForce: 20

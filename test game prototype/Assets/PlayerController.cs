@@ -279,7 +279,7 @@ public class PlayerController : MonoBehaviour
                 }
 
                 //handles moving platforms
-                /*
+                
                 if (currentMovingPlatform != null)
                 {
                     // Calculate the target position by adding the platform's velocity
@@ -288,7 +288,7 @@ public class PlayerController : MonoBehaviour
                     // Smoothly move the player towards the target position
                     rb.MovePosition(targetPosition);
                 }
-                */
+                
 
                 break;
 
@@ -417,7 +417,7 @@ public class PlayerController : MonoBehaviour
 
         rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
         initiateJump = false;
-        rb.AddForce((transform.up * jumpForce) + (-wallDirection * wallJumpForce), ForceMode.Impulse);
+        rb.AddForce((transform.up * jumpForce) + (-wallDirection * wallJumpForce + (orientation.forward * wallRunForwardBoost)), ForceMode.Impulse);
         StartDashCooldown(0.8f);
     }
 
