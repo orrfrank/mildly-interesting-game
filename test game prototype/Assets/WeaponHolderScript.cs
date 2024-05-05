@@ -14,7 +14,7 @@ public class WeaponHolderScript : MonoBehaviour
     {
         loadoutManager = LoadoutManager.Instance;
         Debug.Log(loadoutManager.availableWeapons);
-        foreach (Weapon weaponPrefab in loadoutManager.availableWeapons)
+        foreach (Weapon weaponPrefab in loadoutManager.equippedWeapons)
         {
             GameObject weaponObject = Instantiate(weaponPrefab.gameObject, transform);
             instantiatedWeapons.Add(weaponObject);

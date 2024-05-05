@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class LoadoutManager : MonoBehaviour
@@ -10,7 +9,7 @@ public class LoadoutManager : MonoBehaviour
     // List of available weapons
     public List<Weapon> availableWeapons = new List<Weapon>();
 
-    // List of currently equipped weapons
+    public List<Weapon> equippedWeapons = new List<Weapon>();
 
     // Public accessor for the singleton instance
     public static LoadoutManager Instance
@@ -27,6 +26,9 @@ public class LoadoutManager : MonoBehaviour
                     GameObject singletonObject = new GameObject("LoadoutManager");
                     instance = singletonObject.AddComponent<LoadoutManager>();
                 }
+
+                // Ensure that the instance persists across scene changes
+                DontDestroyOnLoad(instance.gameObject);
             }
             return instance;
         }
@@ -44,7 +46,18 @@ public class LoadoutManager : MonoBehaviour
         availableWeapons.Remove(weapon);
     }
 
-    
+    public void removeEquippedWeapon(Weapon weapon)
+    {
+        equippedWeapons.Remove(weapon);
+    }
 
-    
+    public void equipWeapon(Weapon weapon)
+    {
+        equippedWeapons.Add(weapon);
+    }
+
+    public void clearEquippedWeapons()
+    {
+        equippedWeapons.Clear();
+    }
 }

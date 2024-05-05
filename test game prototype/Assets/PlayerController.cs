@@ -283,10 +283,7 @@ public class PlayerController : MonoBehaviour
                 if (currentMovingPlatform != null)
                 {
                     // Calculate the target position by adding the platform's velocity
-                    targetPosition = transform.position + GetPlatformVelocity(currentMovingPlatform);
-
-                    // Smoothly move the player towards the target position
-                    rb.MovePosition(targetPosition);
+                    applyMovingPlatform();
                 }
                 
 
@@ -523,9 +520,8 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("MovingPlatform"))
         {
-            Vector3 addForce = GetPlatformVelocity(collision.gameObject);
-            Debug.Log("added force " + addForce);
-            rb.AddForce(addForce * movingPlatformConstant);
+            
+            
             currentMovingPlatform = null;
             ClearPreviousPlatformPosition(collision.gameObject);
         }
@@ -533,26 +529,27 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    public Vector3 GetPlatformVelocity(GameObject platform)
+    public void applyMovingPlatform()
     {
-        // Check if we have a previous position for this platform
-        if (!previousPlatformPositions.ContainsKey(platform))
+        Vector3 platformVelocity;
+        RaycastHit hit;
+        if(Physics.Raycast(transform.position,-transform.up,out hit,2))
         {
-            // If not, initialize it with the current position
-            previousPlatformPositions[platform] = platform.transform.position;
-            return Vector3.zero; // No velocity yet
+            platformVelocity = hit.rigidbody.velocity;
+
+            //change the physics metarial to high friction
+
+        }
+        else
+        {
+            platformVelocity = Vector3.zero;
+
+            //low friction
         }
 
-        // Get the current position of the platform
-        Vector3 currentPlatformPosition = platform.transform.position;
+        rb.velocity += platformVelocity * movingPlatformConstant;
 
-        // Calculate the velocity using the change in position over time
-        Vector3 platformVelocity = (currentPlatformPosition - previousPlatformPositions[platform]);
-
-        // Update the previous platform position for the next calculation
-        previousPlatformPositions[platform] = currentPlatformPosition;
-
-        return platformVelocity;
+        
     }
     public void ClearPreviousPlatformPosition(GameObject platform)
     {
