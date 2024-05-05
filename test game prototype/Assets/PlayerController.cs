@@ -101,10 +101,10 @@ public class PlayerController : MonoBehaviour
     Vector3 currentPlatformVel;
     Vector3 previousPlatformVel;
     private Dictionary<GameObject, Vector3> previousPlatformPositions = new Dictionary<GameObject, Vector3>();
-    private Vector3 predictedPosition;
+    private Vector3 targetVel;
     Vector3 smoothedPlatformVel;
     public float smoothingSpeed;
-    private Vector3 targetPosition;
+
     public enum PlayerStates
     {
         grounded,
@@ -199,8 +199,8 @@ public class PlayerController : MonoBehaviour
         updateStateActions();
 
         dashingLogic();
-        
-        
+
+        Debug.Log(targetVel);
 
     }
 
@@ -533,21 +533,26 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 platformVelocity;
         RaycastHit hit;
+        Vector3 targetPosition;
         if(Physics.Raycast(transform.position,-transform.up,out hit,2))
         {
             platformVelocity = hit.rigidbody.velocity;
 
             //change the physics metarial to high friction
-
+            targetPosition = transform.position + platformVelocity;
+            targetVel = targetPosition - transform.position;
         }
         else
         {
             platformVelocity = Vector3.zero;
 
             //low friction
+            targetPosition = Vector3.zero;
+            targetVel = Vector3.zero;
         }
 
-        rb.velocity += platformVelocity * movingPlatformConstant;
+        rb.velocity += targetVel * movingPlatformConstant;
+        
 
         
     }
