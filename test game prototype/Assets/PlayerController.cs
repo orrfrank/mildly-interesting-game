@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : NetworkBehaviour
 {
 
     //states
@@ -18,6 +19,8 @@ public class PlayerController : MonoBehaviour
     Rigidbody rb;
 
     cameraScript camScript;
+    public Camera cam;
+    public GameObject camHolderObj;
     
 
     [Header("ground check options")]
@@ -150,12 +153,18 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
+    public void setCamera(GameObject cameraHolder)
+    {
+        camHolderObj = cameraHolder;
+        camScript = camHolderObj.GetComponentInChildren<cameraScript>();
+        cam = camHolderObj.GetComponentInChildren<Camera>();
+        camHolder = camHolderObj.transform;
+    }
     // Start is called before the first frame update
     void getComponents()
     {
         rb = GetComponent<Rigidbody>();
-        camScript = Camera.main.GetComponent<cameraScript>();
+        
     }
     void gatherInputs()
     {
@@ -194,24 +203,26 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!IsOwner) return;
+
         checkGrounded();
         gatherInputs();
         updateStateActions();
 
         dashingLogic();
 
-        Debug.Log(targetVel);
 
     }
 
     private void LateUpdate()
     {
+        
         moveCamera();
     }
 
     private void FixedUpdate()
     {
-        
+        if (!IsOwner) return;
         dragForces();
         fixedUpdateStateActions();
         // Reset platform-related variables if not on a moving platform
@@ -363,12 +374,12 @@ public class PlayerController : MonoBehaviour
         if (isDashing)
         {
             float targetFov = cameraFov + dashingFov;
-            Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, targetFov, timeToSprint * 10 * Time.deltaTime);
+            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, targetFov, timeToSprint * 10 * Time.deltaTime);
         }
         else
         {
             
-            Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, cameraFov, timeToSprint * 10 * Time.deltaTime);
+            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, cameraFov, timeToSprint * 10 * Time.deltaTime);
         }
     }
 

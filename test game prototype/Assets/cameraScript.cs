@@ -1,10 +1,11 @@
  using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class cameraScript : MonoBehaviour
+public class cameraScript : NetworkBehaviour
 {
     // Start is called before the first frame update
     [Header("input")]
@@ -29,9 +30,13 @@ public class cameraScript : MonoBehaviour
 
     void Awake()
     {
+        
         Cursor.lockState = CursorLockMode.Locked;
     }
-
+    public void setOrientation(Transform inputTransform)
+    {
+        orientation = inputTransform;
+    }
 
     private void Start()
     {
@@ -68,6 +73,7 @@ public class cameraScript : MonoBehaviour
 
     void rotateCamera()
     {
+        if (!IsOwner) return;
         //handles vertical rotation
         rotationX -= mouseY;
         rotationY += mouseX;
