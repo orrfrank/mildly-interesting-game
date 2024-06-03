@@ -216,7 +216,7 @@ public class PlayerController : NetworkBehaviour
 
     private void LateUpdate()
     {
-        
+        if (!IsOwner) return;
         moveCamera();
     }
 

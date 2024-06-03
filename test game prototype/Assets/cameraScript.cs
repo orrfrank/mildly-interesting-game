@@ -73,7 +73,7 @@ public class cameraScript : NetworkBehaviour
 
     void rotateCamera()
     {
-        if (!IsOwner) return;
+        if (IsOwner) return;
         //handles vertical rotation
         rotationX -= mouseY;
         rotationY += mouseX;
