@@ -183,9 +183,6 @@ public class PlayerController : NetworkBehaviour
             initiateJump = true;
             StartCoroutine(bufferJump());
         }
-
-
-
     }
 
     void Start()

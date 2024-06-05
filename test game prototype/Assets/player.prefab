@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 7433467811622028423}
   - component: {fileID: 2330433113193733153}
   - component: {fileID: 1636941579387475123}
-  - component: {fileID: 5462555324294299836}
+  - component: {fileID: 6873217974254149606}
   m_Layer: 0
   m_Name: player
   m_TagString: Player
@@ -238,7 +238,7 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 2
---- !u!114 &5462555324294299836
+--- !u!114 &6873217974254149606
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -247,9 +247,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 3337798177254016043}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62367786d57f3f74d8ffaf2fd5c1fdf5, type: 3}
+  m_Script: {fileID: 11500000, guid: df2868252ab5c4d1da357e8f11f1b524, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UseUnreliableDeltas: 0
+  SyncPositionX: 1
+  SyncPositionY: 1
+  SyncPositionZ: 1
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 1
+  SyncScaleX: 0
+  SyncScaleY: 0
+  SyncScaleZ: 0
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  UseQuaternionSynchronization: 0
+  UseQuaternionCompression: 0
+  UseHalfFloatPrecision: 0
+  InLocalSpace: 0
+  Interpolate: 1
+  SlerpPosition: 0
 --- !u!1 &3966759981987803769
 GameObject:
   m_ObjectHideFlags: 0
