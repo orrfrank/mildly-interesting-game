@@ -1,3 +1,4 @@
+using Steamworks;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -11,18 +12,20 @@ public class NetworkUI : MonoBehaviour
 
     public GameObject UICamera;
 
+    public GameNetworkManager networkManager;
+
 
     private void Awake()
     {
         startHost.onClick.AddListener(() =>
         {
-            NetworkManager.Singleton.StartHost();
+            networkManager.StartHost(2);
             DestroySelf();
         });
 
         startClient.onClick.AddListener(() =>
         {
-            NetworkManager.Singleton.StartClient();
+            SteamFriends.OpenOverlay("friends");
             DestroySelf() ;
         });
     }
