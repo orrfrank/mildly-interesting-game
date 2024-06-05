@@ -1,4 +1,5 @@
 using Steamworks;
+using Steamworks.Data;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -20,16 +21,20 @@ public class NetworkUI : MonoBehaviour
         startHost.onClick.AddListener(() =>
         {
             networkManager.StartHost(2);
-            DestroySelf();
         });
 
         startClient.onClick.AddListener(() =>
         {
             SteamFriends.OpenOverlay("friends");
-            DestroySelf() ;
+            
         });
-    }
 
+        SteamMatchmaking.OnLobbyEntered += OnLobbyEntered;
+    }
+    private void OnLobbyEntered(Lobby lobby)
+    {
+        DestroySelf();
+    }
     void DestroySelf()
     {
         Destroy(this.gameObject);
