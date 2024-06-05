@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : NetworkBehaviour
 {
-
+    public GameObject cameraPrefab;
     //states
     private PlayerStates currentState;
 
@@ -18,6 +19,8 @@ public class PlayerController : MonoBehaviour
     Rigidbody rb;
 
     cameraScript camScript;
+    Camera cam;
+    
     
 
     [Header("ground check options")]
@@ -155,7 +158,21 @@ public class PlayerController : MonoBehaviour
     void getComponents()
     {
         rb = GetComponent<Rigidbody>();
-        camScript = Camera.main.GetComponent<cameraScript>();
+
+
+        if (IsOwner)
+        {
+            GameObject cameraInstance = Instantiate(cameraPrefab);
+            camHolder = cameraInstance.transform;
+        }
+        if(camHolder != null)
+        {
+            
+            cam = camHolder.GetComponentInChildren<Camera>();
+            camScript = cam.GetComponent<cameraScript>();
+            camScript.orientation = orientation;
+        }
+        
     }
     void gatherInputs()
     {
@@ -177,6 +194,7 @@ public class PlayerController : MonoBehaviour
 
         Application.targetFrameRate = 144;
         
+        
     }
 
     void linearJumpLogic()
@@ -194,24 +212,31 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!IsOwner) return;
         checkGrounded();
         gatherInputs();
         updateStateActions();
 
         dashingLogic();
 
-        Debug.Log(targetVel);
+        Debug.Log(IsOwner);
 
     }
 
     private void LateUpdate()
     {
-        moveCamera();
+        if (!IsOwner) return;
+        if(camHolder != null)
+        {
+            moveCamera();
+        }
+        
     }
 
     private void FixedUpdate()
     {
-        
+        if(!IsOwner) return;
+
         dragForces();
         fixedUpdateStateActions();
         // Reset platform-related variables if not on a moving platform
@@ -359,17 +384,20 @@ public class PlayerController : MonoBehaviour
         {
             StartCoroutine(dash());
         }
+        if(camHolder != null)
+        {
+            if (isDashing)
+            {
+                float targetFov = cameraFov + dashingFov;
+                cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, targetFov, timeToSprint * 10 * Time.deltaTime);
+            }
+            else
+            {
 
-        if (isDashing)
-        {
-            float targetFov = cameraFov + dashingFov;
-            Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, targetFov, timeToSprint * 10 * Time.deltaTime);
+                cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, cameraFov, timeToSprint * 10 * Time.deltaTime);
+            }
         }
-        else
-        {
-            
-            Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, cameraFov, timeToSprint * 10 * Time.deltaTime);
-        }
+        
     }
 
     void checkGrounded()
@@ -441,13 +469,23 @@ public class PlayerController : MonoBehaviour
     }
     void pitchCamera(float direction)
     {
-        camScript.rotationZ = Mathf.Lerp(camScript.rotationZ, wallrunCameraDegrees * direction, cameraPitchSpeed * Time.deltaTime);
+        if (camHolder != null)
+        {
+
+
+            camScript.rotationZ = Mathf.Lerp(camScript.rotationZ, wallrunCameraDegrees * direction, cameraPitchSpeed * Time.deltaTime);
+        }
     }
 
     void resetCameraPitch()
     {
-        // Reset the camera rotation to its initial state
-        camScript.rotationZ = Mathf.Lerp(camScript.rotationZ, 0,  (wallrunCameraDegrees/ cameraPitchSpeed) * Time.deltaTime);
+        if (camHolder != null)
+        {
+
+
+            // Reset the camera rotation to its initial state
+            camScript.rotationZ = Mathf.Lerp(camScript.rotationZ, 0, (wallrunCameraDegrees / cameraPitchSpeed) * Time.deltaTime);
+        }
     }
 
 
