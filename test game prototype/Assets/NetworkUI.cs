@@ -1,36 +1,58 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
+using Unity.Netcode;
+using Steamworks;
 
 public class NetworkUI : MonoBehaviour
 {
     public Button startHost;
     public Button startClient;
-
     public GameObject UICamera;
 
-
-    private void Awake()
+    private void Start()
     {
-        startHost.onClick.AddListener(() =>
+        // Ensure Steam API is initialized
+        if (!SteamAPI.IsSteamRunning())
         {
-            NetworkManager.Singleton.StartHost();
-            DestroySelf();
-        });
+            Debug.LogError("Steam is not running!");
+            return;
+        }
 
-        startClient.onClick.AddListener(() =>
+        if (!SteamAPI.Init())
         {
-            NetworkManager.Singleton.StartClient();
-            DestroySelf() ;
-        });
+            Debug.LogError("Failed to initialize Steam API!");
+            return;
+        }
+
+        startHost.onClick.AddListener(StartHostButtonClick);
+        startClient.onClick.AddListener(StartClientButtonClick);
+    }
+
+    public void StartHostButtonClick()
+    {
+        StartHost();
+        DestroySelf();
+    }
+
+    public void StartClientButtonClick()
+    {
+        StartClient();
+        DestroySelf();
+    }
+
+    void StartHost()
+    {
+        NetworkManager.Singleton.StartHost();
+    }
+
+    void StartClient()
+    {
+        NetworkManager.Singleton.StartClient();
     }
 
     void DestroySelf()
     {
-        Destroy(this.gameObject);
+        Destroy(gameObject);
         Destroy(UICamera.gameObject);
     }
-
 }
