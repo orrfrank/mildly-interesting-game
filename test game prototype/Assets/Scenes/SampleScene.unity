@@ -387,7 +387,7 @@ MonoBehaviour:
     EnableNetworkLogs: 1
     OldPrefabList: []
   RunInBackground: 1
-  LogLevel: 1
+  LogLevel: 0
 --- !u!4 &91429765
 Transform:
   m_ObjectHideFlags: 0
@@ -425,9 +425,9 @@ MonoBehaviour:
   m_MaxConnectAttempts: 60
   m_DisconnectTimeoutMS: 30000
   ConnectionData:
-    Address: 127.0.0.1
+    Address: 10.104.208.35
     Port: 7777
-    ServerListenAddress: 127.0.0.1
+    ServerListenAddress: 10.104.208.35
   DebugSimulator:
     PacketDelayMS: 0
     PacketJitterMS: 0

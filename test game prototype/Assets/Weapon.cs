@@ -1,7 +1,8 @@
 using System.Collections;
+using Unity.Netcode;
 using UnityEngine;
 
-public abstract class Weapon : MonoBehaviour
+public abstract class Weapon : NetworkBehaviour
 {
     public float ammo;
     public float currentAmmo;
@@ -54,6 +55,7 @@ public abstract class Weapon : MonoBehaviour
         if (currentAmmo > 0 && projectilePrefab != null && shootPoint != null)
         {
             currentProjectileInstance = Instantiate(projectilePrefab, shootPoint.position, Quaternion.Euler(90f, 0f, 0f) );
+            currentProjectileInstance.GetComponent<NetworkObject>().Spawn(true);
             //90 rotation on x axis is forward
 
             Rigidbody rb = currentProjectileInstance.GetComponent<Rigidbody>();
