@@ -77,8 +77,11 @@ public class cameraScript : MonoBehaviour
 
 
 
-        // Apply the vertical rotation to the player (assuming player is a separate object)
-        orientation.transform.rotation = Quaternion.Euler(0, rotationY, 0f);
+        if (orientation != null)
+        {
+            orientation.transform.rotation = Quaternion.Euler(0, rotationY, 0f);
+        }
+       
     }
 
 
