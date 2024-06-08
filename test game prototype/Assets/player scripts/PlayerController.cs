@@ -443,7 +443,7 @@ public class PlayerController : NetworkBehaviour
 
         rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
         initiateJump = false;
-        rb.AddForce((transform.up * jumpForce) + (-wallDirection * wallJumpForce + (orientation.forward * wallRunForwardBoost)), ForceMode.Impulse);
+        rb.AddForce((transform.up * jumpForce) + (-wallDirection * wallJumpForce + (moveDirection * wallRunForwardBoost)), ForceMode.Impulse);
         StartDashCooldown(0.8f);
     }
 

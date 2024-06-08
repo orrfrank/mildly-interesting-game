@@ -51,6 +51,20 @@ public class NetworkUI : MonoBehaviour
         }
         
     }
+
+
+    private void Update()
+    {
+        if(useLan)
+        {
+            if (networkManager.CurrentLobby.HasValue)
+            {
+                DestroySelf();
+            }
+        }
+        
+                    
+    }
     private void OnLobbyEntered(Lobby lobby)
     {
         DestroySelf();
