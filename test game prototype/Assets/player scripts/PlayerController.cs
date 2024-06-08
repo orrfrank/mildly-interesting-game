@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 
 public class PlayerController : NetworkBehaviour
 {
-    public GameObject cameraPrefab;
+    
     //states
     private PlayerStates currentState;
 
@@ -18,8 +18,8 @@ public class PlayerController : NetworkBehaviour
     public Transform camHolder;
     Rigidbody rb;
 
-    cameraScript camScript;
-    Camera cam;
+    public cameraScript camScript;
+    public Camera cam;
     
     
 
@@ -33,7 +33,7 @@ public class PlayerController : NetworkBehaviour
     private bool jump;
 
     public float jumpBufferTimer;
-
+    public float rotationSpeed;
     [Header("speed")]
     float speed;
     public float airSpeed;
@@ -158,24 +158,14 @@ public class PlayerController : NetworkBehaviour
     void getComponents()
     {
         rb = GetComponent<Rigidbody>();
-
-
-        if (IsOwner)
-        {
-            GameObject cameraInstance = Instantiate(cameraPrefab);
-            camHolder = cameraInstance.transform;
-        }
-        if(camHolder != null)
-        {
-            
-            cam = camHolder.GetComponentInChildren<Camera>();
-            camScript = cam.GetComponent<cameraScript>();
-            camScript.orientation = orientation;
-        }
-        
     }
     void gatherInputs()
     {
+        Vector3 viewDir = transform.position - new Vector3(cam.transform.position.x, transform.position.y, cam.transform.position.z);
+        orientation.forward = viewDir.normalized;
+
+         
+
         move = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
         moveDirection = (orientation.forward * move.y + orientation.right * move.x).normalized;
         if(Input.GetButtonDown("Jump"))
@@ -187,6 +177,9 @@ public class PlayerController : NetworkBehaviour
 
     void Start()
     {
+        UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+        UnityEngine.Cursor.visible = false;
+
         getComponents();
 
         Application.targetFrameRate = 144;
@@ -209,30 +202,27 @@ public class PlayerController : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!IsOwner) return;
+        
         checkGrounded();
         gatherInputs();
         updateStateActions();
 
         dashingLogic();
 
-        Debug.Log(IsOwner);
 
     }
 
     private void LateUpdate()
     {
-        if (!IsOwner) return;
         if(camHolder != null)
         {
-            moveCamera();
+            //moveCamera();
         }
         
     }
 
     private void FixedUpdate()
     {
-        if(!IsOwner) return;
 
         dragForces();
         fixedUpdateStateActions();
@@ -253,7 +243,7 @@ public class PlayerController : NetworkBehaviour
             case PlayerStates.grounded:
                 isGrounded = true;
                 groundedLogic();
-                resetCameraPitch();
+                //resetCameraPitch();
                 break;
             case PlayerStates.airborne:
                 isGrounded = false;
@@ -346,7 +336,7 @@ public class PlayerController : NetworkBehaviour
                 break;
             case AirborneStates.notWallrunning:
                 linearJumpLogic();
-                resetCameraPitch();
+                //resetCameraPitch();
                 useNormalGravity();
                 break;
 
@@ -356,7 +346,7 @@ public class PlayerController : NetworkBehaviour
                 {
                     jumpFromWall(-wallHit.normal.normalized);
                 }
-                pitchCamera(-1);
+                //pitchCamera(-1);
 
                 useWallrunningGravity();
                 break;
@@ -367,7 +357,7 @@ public class PlayerController : NetworkBehaviour
                 {
                     jumpFromWall(-wallHit.normal.normalized);
                 }
-                pitchCamera(1);
+                //pitchCamera(1);
 
                 useWallrunningGravity();
                 break;

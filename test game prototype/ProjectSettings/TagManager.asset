@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - MovingPlatform
+  - Player 1
   layers:
   - Default
   - TransparentFX
