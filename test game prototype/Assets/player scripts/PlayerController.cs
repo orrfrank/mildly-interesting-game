@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Cinemachine;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -17,6 +18,8 @@ public class PlayerController : NetworkBehaviour
     public Transform orientation;
     public Transform camHolder;
     Rigidbody rb;
+    [SerializeField] CinemachineFreeLook vc;
+
 
     public cameraScript camScript;
     public Camera cam;
@@ -152,7 +155,18 @@ public class PlayerController : NetworkBehaviour
             return false;
         }
     }
-
+    public override void OnNetworkSpawn()
+    {
+        Debug.Log(IsOwner);
+        if(IsOwner)
+        {
+            vc.Priority = 2;
+        }
+        else
+        {
+            vc.Priority = 0;
+        }
+    }
 
     // Start is called before the first frame update
     void getComponents()

@@ -15,21 +15,41 @@ public class NetworkUI : MonoBehaviour
 
     public GameNetworkManager networkManager;
 
+    public bool useLan;
 
     private void Awake()
     {
-        startHost.onClick.AddListener(() =>
-        {
-            networkManager.StartHost(2);
-        });
 
-        startClient.onClick.AddListener(() =>
-        {
-            SteamFriends.OpenOverlay("friends");
-            
-        });
 
-        SteamMatchmaking.OnLobbyEntered += OnLobbyEntered;
+        if(!useLan)
+        {
+            startHost.onClick.AddListener(() =>
+            {
+                networkManager.StartHost(2);
+            });
+
+            startClient.onClick.AddListener(() =>
+            {
+                SteamFriends.OpenOverlay("friends");
+
+            });
+
+            SteamMatchmaking.OnLobbyEntered += OnLobbyEntered;
+        }
+        else
+        {
+            startHost.onClick.AddListener(() =>
+            {
+                NetworkManager.Singleton.StartHost();
+                DestroySelf();
+            });
+            startClient.onClick.AddListener(() =>
+            {
+                NetworkManager.Singleton.StartClient();
+                DestroySelf();
+            });
+        }
+        
     }
     private void OnLobbyEntered(Lobby lobby)
     {
